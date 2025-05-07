@@ -53,9 +53,8 @@ rm "$CAL_DIR"/* 2>/dev/null
 
 # Download calendar files
 if $is_github_action; then
-  # In GitHub Actions, we're skipping this step because files are already downloaded
-  # in the workflow before this script runs
   echo "Running in GitHub Actions - calendar files already downloaded"
+  # Don't skip the rest of the process - just the download part
 else
   # In local environment, CAL_URLS is already an array from .env
   for CAL_URL in "${CAL_URLS[@]}"; do
@@ -71,16 +70,29 @@ else
   source venv/bin/activate
 fi
 
+# Get yesterday's date in ISO format (Linux compatible)
+YESTERDAY=$(date -d "yesterday" +"%Y-%m-%d")
+
+# Check if we have any calendar files
+if [ ! "$(find "$CAL_DIR" -type f -name '*.ics*' | wc -l)" -gt 0 ]; then
+  echo "Error: No calendar files found in $CAL_DIR directory"
+  exit 1
+fi
+
+# List what calendar files we have
+echo "Found these calendar files:"
+ls -la "$CAL_DIR"
+
 # Generate standard free time
 python3 main.py \
-    -s $(date -Idate -d 'yesterday') \
+    -s "$YESTERDAY" \
     -f $(find "$CAL_DIR" -type f -name '*.ics*') |
     grep -E '^$|^[A-Za-z]{3} {1,2}[0-9]{1,2} [A-Za-z]{3} @ {1,2}[0-9:]{4,5} [AP]M – {1,2}[0-9:]{4,5} [AP]M [A-Za-z0-9+-/_]{2,32} \(([0-9]{1,2}h)?([0-9]{1,2}m)?\)' \
         >>"$TEXT_FILE"
 
 # Generate extended free time
 python3 main.py \
-    -s $(date -Idate -d 'yesterday') \
+    -s "$YESTERDAY" \
     -w \
     --days 91 \
     -f $(find "$CAL_DIR" -type f -name '*.ics*') |
