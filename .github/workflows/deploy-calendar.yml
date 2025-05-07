@@ -8,7 +8,7 @@ on:
     # Allow manual trigger from GitHub UI
   pull_request:
     branches:
-      - workflow/fixup-github-workflow-main-deploy-script-v2 # tmp
+      - "**" # Run on PRs targeting any branch
 
 jobs:
   deploy:
