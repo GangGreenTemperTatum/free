@@ -3,12 +3,9 @@ name: Deploy Calendar Free Time
 on:
   schedule:
     # Run daily at 4:00 AM UTC
-    - cron: "0 4 * * *"
+    #- cron: "0 4 * * *" # uncomment to enable daily schedule
   workflow_dispatch:
     # Allow manual trigger from GitHub UI
-  pull_request:
-    branches:
-      - "**" # Run on PRs targeting any branch
 
 jobs:
   deploy:
@@ -58,39 +55,41 @@ jobs:
           COUNTER=0
 
           # Process each calendar URL sequentially (supports any number)
-          for i in {1..10}; do
-            SECRET_NAME="CAL_URL_$i"
-            URL_VALUE="${!SECRET_NAME}"
-
+          for i in {1..10}; do.CAL_URL_1 }}" ]; then
+            SECRET_NAME="CAL_URL_$i"ll --silent --head --fail "${{ secrets.CAL_URL_1 }}"; then
+            URL_VALUE="${!SECRET_NAME}" "${{ secrets.CAL_URL_1 }}"
+              COUNTER=$((COUNTER+1))
             if [ -n "$URL_VALUE" ]; then
               echo "Downloading calendar $i..."
               if curl --output /dev/null --silent --head --fail "$URL_VALUE"; then
                 wget -O cal/calendar${i}.ics "$URL_VALUE"
                 echo "Calendar $i downloaded successfully"
-                COUNTER=$((COUNTER+1))
-              else
+                COUNTER=$((COUNTER+1)) --silent --head --fail "${{ secrets.CAL_URL_2 }}"; then
+              else -O cal/calendar2.ics "${{ secrets.CAL_URL_2 }}"
                 echo "Warning: Calendar $i URL returned an error."
               fi
             fi
           done
-
           # Verify we have at least one calendar file
-          if [ "$COUNTER" -eq 0 ]; then
+          # Verify we have at least one calendar file
+          if [ "$COUNTER" -eq 0 ]; thendar files were downloaded."
             echo "Error: No valid calendar files were downloaded."
             echo "Please check that your calendar URL secrets are correctly configured."
             exit 1
-          fi
-
+          fiho "Downloaded $COUNTER calendar files"
+          ls -la cal
           # Show downloaded files (without exposing sensitive content)
           echo "Downloaded $COUNTER calendar files"
-          ls -la cal
+          ls -la calx deploy.sh
 
-      - name: Make deploy script executable
-        run: chmod +x deploy.sh
+      - name: Make scripts executable
+        run: |
+          chmod +x deploy.sh
+          chmod +x debug.sh
 
-      - name: Run deploy script
-        run: ./deploy.sh
-
+      - name: Run diagnostics          echo "Deployment completed."
+        run: ./debug.shr is now available at: https://${{ secrets.PROJECT_NAME }}.pages.dev"
+      - name: Run deploy script        run: ./deploy.sh
       - name: Verify deployment
         run: |
           echo "Deployment completed."
