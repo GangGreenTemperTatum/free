@@ -50,6 +50,8 @@ jobs:
 
       - name: Download calendar files
         run: |
+          # Ensure cal directory exists and is empty
+          rm -rf cal
           mkdir -p cal
 
           # First calendar - check if it exists and is valid
@@ -76,8 +78,8 @@ jobs:
 
           # Additional calendars can be added here using the same pattern
 
-          # Verify we have at least one calendar file
-          if [ "$(find cal -name '*.ics' | wc -l)" -eq 0 ]; then
+          # Verify we have at least one calendar file and they're not empty
+          if [ "$(find cal -name '*.ics' -not -empty | wc -l)" -eq 0 ]; then
             echo "Error: No valid calendar files were downloaded."
             echo "Please check that your calendar URL secrets are correctly configured."
             echo "At least one valid calendar file is required."
